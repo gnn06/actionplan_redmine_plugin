@@ -1,0 +1,18 @@
+require_dependency 'issues_controller'
+
+module IssuePatch
+
+  def subtask
+    logger.debug("goi:subtask")
+    params[:action => "new"]
+    find_optional_project
+    logger.debug "goi:subtask #{@project}"
+    build_new_issue_from_params
+    render "plan/toto", layout: false
+  end
+
+end
+
+print "goi:issue_patch"
+
+IssuesController.send(:include, IssuePatch)

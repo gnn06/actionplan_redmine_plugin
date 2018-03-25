@@ -1,0 +1,60 @@
+<h2>Plan d'action en détail</h2>
+<div>
+  <%= @issue.tracker%>#<%= @issue.id %> - <%= @issue.subject %> - <%= l(:label_updated_time, time_tag(@issue.updated_on)).html_safe %>.
+</div>
+<table style="border:1px solid black">
+  <% issue_list(@issue.descendants.visible.preload(:status, :priority, :tracker, :assigned_to)) do |child, level| %>
+    <tr>
+    <%= form_for child do %>
+      <td><%= link_to_issue(child, :project => (@issue.project_id != child.project_id), :subject => false, :tracker => false)%></td>
+      <td><%= text_field_tag('issue[subject]', child.subject)  %></td>
+
+      <td><%= select_tag('issue[assigned_to_id]',
+                    content_tag('option', l(:label_nobody), :value => 'none') +
+                    principals_options_for_select(child.assignable_users, child.assigned_to)) %></td>
+
+      <td><%= select_tag('issue[status_id]',
+                    options_from_collection_for_select(child.new_statuses_allowed_to(User.current), :id, :name, child.status_id),
+                    :onchange => "") %></td>
+
+      <td><%= select_tag('issue[priority_id]',
+                 options_from_collection_for_select(IssuePriority.active, :id, :name, child.priority_id)) %></td>
+
+      <td><%= date_field_tag 'issue[due_date]', '', :value => child.due_date, :size => 10 %><%= calendar_for('issue_due_date') %></td>
+
+      <td>
+        <div>
+          <% for note in child.journals do %>
+            <% if note.notes.present? %>
+              <%= note.created_on %>
+              <%= textilizable(note, :notes).html_safe %>
+            <% end %>
+          <% end %>
+        </div>
+        <%= text_area_tag 'issue[notes]'%>
+      </td>
+
+      <td><%= submit_tag l(:button_submit) %></td>
+      <%= hidden_field_tag('back_url', request.original_url) %>
+    <% end %>
+    </tr>
+  <% end %>
+</table>
+
+<a id="subtask-btn">add subtask</a>
+<div id="subtask"/>
+
+<%= javascript_tag do %>
+$(document).ready(function(){
+  $("#subtask-btn").click(function(e){
+    e.preventDefault();
+    $.ajax({
+      url: "/issues/3/plan/new",
+      success: function(data){
+        $('#subtask').html(data);
+        addFormObserversForDoubleSubmit();
+      },
+    });
+  });
+});
+<% end %>
