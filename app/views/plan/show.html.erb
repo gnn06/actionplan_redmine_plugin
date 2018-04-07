@@ -1,12 +1,13 @@
 <h2>Plan d'action en détail</h2>
 <div>
-  <%= @issue.tracker%>#<%= @issue.id %> - <%= @issue.subject %> - <%= l(:label_updated_time, time_tag(@issue.updated_on)).html_safe %>.
+  <%= link_to_issue(@issue) %>
+   - <%= l(:label_updated_time, time_tag(@issue.updated_on)).html_safe %>.
 </div>
 <table style="border:1px solid black">
-  <% issue_list(@issue.descendants.visible.preload(:status, :priority, :tracker, :assigned_to)) do |child, level| %>
+  <% issue_list(@issuePlan) do |child, level| %>
     <tr>
     <%= form_for child do %>
-      <td><%= link_to_issue(child, :project => (@issue.project_id != child.project_id), :subject => false, :tracker => false)%></td>
+      <td><%= link_to_issue(child, :project => (@issue.project_id != child.project_id), :subject => false, :tracker => false) if child.id %></td>
       <td><%= text_field_tag('issue[subject]', child.subject)  %></td>
 
       <td><%= select_tag('issue[assigned_to_id]',
@@ -34,27 +35,15 @@
         <%= text_area_tag 'issue[notes]'%>
       </td>
 
-      <td><%= submit_tag l(:button_submit) %></td>
-      <%= hidden_field_tag('back_url', request.original_url) %>
+      <td>
+        <%= submit_tag l(:button_submit) %>
+        <%= hidden_field_tag('back_url', @backUrl) %>
+        <%= hidden_field_tag('issue[project_id]', child.project_id) %>
+        <%= hidden_field_tag('issue[parent_issue_id]', child.parent_id) %>
+      </td>
     <% end %>
     </tr>
   <% end %>
 </table>
 
-<a id="subtask-btn">add subtask</a>
-<div id="subtask"/>
-
-<%= javascript_tag do %>
-$(document).ready(function(){
-  $("#subtask-btn").click(function(e){
-    e.preventDefault();
-    $.ajax({
-      url: "/issues/3/plan/new",
-      success: function(data){
-        $('#subtask').html(data);
-        addFormObserversForDoubleSubmit();
-      },
-    });
-  });
-});
-<% end %>
+<%= button_to "ajouter tache", subtask_path, method: :get %>

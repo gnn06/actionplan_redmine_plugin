@@ -1,8 +1,20 @@
 todo
+
 bug : quand on choisit assigner à personne
 bug : on ne devrait pas pouvoir changer l'état et l'échéance d'une tache qui a une fille
 bug : si pas connecté, le statut n’apparaît pas
-rajouter une ligne pour rajouter une tache
 filtrer les taches par niveau
 indentation des taches pour montrer le niveau
 tracker en dur dans creation nouvelle tache
+retirer les boutons submit quand on rajoute une sous-tache
+gérer le fait que pour une sur-tache la priorité n'est pas modifiable
+bug : notes d'une nouvelle tache ne se sauvegarde pas
+rajouter un bouton pour supprimer une tache
+pouvoir rajouter une sous-tache sous un sous-tache
+
+test
+modification
+changer tous les champs
+création
+création à différent niveau
+vérifier retour à la vue plan après modification ou création

@@ -12,7 +12,8 @@ Redmine::Plugin.register :plan do
     permission :add_subtask, :subtask => :new
   end
 
-  menu :application_menu, :plan, { :controller => 'plan', :action => 'index' }, :caption => 'Plan'
+  permission :plan, { :plan => [:index] }, :public => true
+  menu :project_menu, :plan, { :controller => 'plan', :action => 'index' }, :caption => 'Plan'
 end
 
 #logger.debug "goi:init.rb"
