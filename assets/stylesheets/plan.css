@@ -1,0 +1,17 @@
+table.plan  {
+  width: 100%;
+  border-spacing: 0;
+}
+
+table.plan input#issue_subject {
+  width: auto;
+}
+
+table.plan tr:nth-child(even) {
+  background: #dae1ef;
+}
+
+table.plan td.block_button select {
+  display: block;
+  width: 100%;
+}

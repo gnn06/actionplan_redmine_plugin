@@ -1,27 +1,35 @@
+<% content_for :header_tags do %>
+    <%= stylesheet_link_tag 'plan.css', :plugin => 'plan' %>
+<% end %>
+
 <h2>Plan d'action en détail</h2>
+
 <div>
   <%= link_to_issue(@issue) %>
    - <%= l(:label_updated_time, time_tag(@issue.updated_on)).html_safe %>.
 </div>
-<table style="border:1px solid black">
+<table class="plan" style="border:1px solid black">
   <% issue_list(@issuePlan) do |child, level| %>
     <tr>
     <%= form_for child do %>
       <td><%= link_to_issue(child, :project => (@issue.project_id != child.project_id), :subject => false, :tracker => false) if child.id %></td>
       <td><%= text_field_tag('issue[subject]', child.subject)  %></td>
 
-      <td><%= select_tag('issue[assigned_to_id]',
+      <td class="block_button">
+        <%= select_tag('issue[assigned_to_id]',
                     content_tag('option', l(:label_nobody), :value => 'none') +
-                    principals_options_for_select(child.assignable_users, child.assigned_to)) %></td>
+                    principals_options_for_select(child.assignable_users, child.assigned_to)) %>
 
-      <td><%= select_tag('issue[status_id]',
-                    options_from_collection_for_select(child.new_statuses_allowed_to(User.current), :id, :name, child.status_id),
-                    :onchange => "") %></td>
+        <%= select_tag('issue[priority_id]',
+                 options_from_collection_for_select(IssuePriority.active, :id, :name, child.priority_id)) %>
+      </td>
 
-      <td><%= select_tag('issue[priority_id]',
-                 options_from_collection_for_select(IssuePriority.active, :id, :name, child.priority_id)) %></td>
-
-      <td><%= date_field_tag 'issue[due_date]', '', :value => child.due_date, :size => 10 %><%= calendar_for('issue_due_date') %></td>
+      <td class="block_button">
+         <%= select_tag('issue[status_id]',
+                     options_from_collection_for_select(child.new_statuses_allowed_to(User.current), :id, :name, child.status_id),
+                     :onchange => "") %>
+        <%= date_field_tag 'issue[due_date]', '', :value => child.due_date, :size => 10 %><%= calendar_for('issue_due_date') %>
+      </td>
 
       <td>
         <div>
@@ -36,7 +44,8 @@
       </td>
 
       <td>
-        <%= submit_tag l(:button_submit) %>
+        <%= submit_tag l(:button_save) %>
+        <%= link_to l(:button_delete), issue_path(child, :back_url => @backUrl), :data => {:confirm => issues_destroy_confirmation_message(child)}, :method => :delete, :class => 'icon icon-del' if child.id and child.deletable? %>
         <%= hidden_field_tag('back_url', @backUrl) %>
         <%= hidden_field_tag('issue[project_id]', child.project_id) %>
         <%= hidden_field_tag('issue[parent_issue_id]', child.parent_id) %>
@@ -46,4 +55,4 @@
   <% end %>
 </table>
 
-<%= button_to "ajouter tache", subtask_path, method: :get %>
+<%= button_to :add_task, subtask_path, method: :get %>
