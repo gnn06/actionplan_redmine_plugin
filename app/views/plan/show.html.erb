@@ -12,7 +12,8 @@
   <% issue_list(@issuePlan) do |child, level| %>
     <tr>
     <%= form_for child do %>
-      <td><%= link_to_issue(child, :project => (@issue.project_id != child.project_id), :subject => false, :tracker => false) if child.id %></td>
+      <td><%= link_to_issue(child, :project => (@issue.project_id != child.project_id),
+                            :subject => false, :tracker => false) if child.id %></td>
       <td><%= text_field_tag('issue[subject]', child.subject)  %></td>
 
       <td class="block_button">
@@ -45,7 +46,9 @@
 
       <td>
         <%= submit_tag l(:button_save) %>
-        <%= link_to l(:button_delete), issue_path(child, :back_url => @backUrl), :data => {:confirm => issues_destroy_confirmation_message(child)}, :method => :delete, :class => 'icon icon-del' if child.id and child.deletable? %>
+        <%= link_to l(:button_delete), issue_path(child, :back_url => @backUrl),
+            :data => {:confirm => issues_destroy_confirmation_message(child)},
+            :method => :delete, :class => 'icon icon-del' if child.id and child.deletable? %>
         <%= hidden_field_tag('back_url', @backUrl) %>
         <%= hidden_field_tag('issue[project_id]', child.project_id) %>
         <%= hidden_field_tag('issue[parent_issue_id]', child.parent_id) %>
