@@ -8,7 +8,7 @@
   <%= link_to_issue(@issue) %>
    - <%= l(:label_updated_time, time_tag(@issue.updated_on)).html_safe %>.
 </div>
-<table class="plan" style="border:1px solid black">
+<table class="plan">
   <% issue_list(@issuePlan) do |child, level| %>
     <tr>
     <%= form_for child do %>
@@ -16,34 +16,47 @@
                             :subject => false, :tracker => false) if child.id %></td>
       <td><%= text_field_tag('issue[subject]', child.subject)  %></td>
 
-      <td class="block_button">
-        <%= select_tag('issue[assigned_to_id]',
-                    content_tag('option', l(:label_nobody), :value => 'none') +
-                    principals_options_for_select(child.assignable_users, child.assigned_to)) %>
+      <td>
+          <%= select_tag('issue[status_id]',
+                      options_from_collection_for_select(child.new_statuses_allowed_to(User.current), :id, :name, child.status_id),
+                      :onchange => "") %>
 
-        <%= select_tag('issue[priority_id]',
-                 options_from_collection_for_select(IssuePriority.active, :id, :name, child.priority_id)) %>
-      </td>
+          <%= select_tag('issue[assigned_to_id]',
+                      content_tag('option', l(:label_nobody), :value => 'none') +
+                      principals_options_for_select(child.assignable_users, child.assigned_to)) %>
 
-      <td class="block_button">
-         <%= select_tag('issue[status_id]',
-                     options_from_collection_for_select(child.new_statuses_allowed_to(User.current), :id, :name, child.status_id),
-                     :onchange => "") %>
-        <%= date_field_tag 'issue[due_date]', '', :value => child.due_date, :size => 10 %><%= calendar_for('issue_due_date') %>
+          <%= select_tag('issue[priority_id]',
+                   options_from_collection_for_select(IssuePriority.active, :id, :name, child.priority_id)) %>
+
+           <%= date_field_tag 'issue[due_date]', '', :value => child.due_date, :size => 10 %><%= calendar_for('issue_due_date') %>
+
       </td>
 
       <td>
-        <div>
-          <% for note in child.journals do %>
-            <% if note.notes.present? %>
-              <%= note.created_on %>
-              <%= textilizable(note, :notes).html_safe %>
-            <% end %>
+        <% lastNote = child.journals.where.not(notes: '').reorder(:id => :desc).first %>
+        <% if lastNote %>
+          <fieldset>
+            <legend><%= lastNote.created_on if lastNote %></legend>
+            <%= textilizable(lastNote.notes) if lastNote %>
+          </fieldset>
+        <% end %>
+        <% if false and child.last_notes %>
+          Le  :
+          <%= textilizable(child, :last_notes).html_safe %>
+        <% end %>
+        <% if false %>
+        <% for note in child.journals do %>
+          <% if note.notes.present? %>
+            <%= note.created_on %>
+            <%= textilizable(note, :notes).html_safe %>
           <% end %>
-        </div>
-        <%= text_area_tag 'issue[notes]'%>
+        <% end %>
+        <% end %>
+        <fieldset>
+          <legend>Nouveau commentaire</legend>
+          <%= text_area_tag 'issue[notes]' %>
+        </fieldset>
       </td>
-
       <td>
         <%= submit_tag l(:button_save) %>
         <%= link_to l(:button_delete), issue_path(child, :back_url => @backUrl),
