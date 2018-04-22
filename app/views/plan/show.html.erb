@@ -29,28 +29,27 @@
                    options_from_collection_for_select(IssuePriority.active, :id, :name, child.priority_id)) %>
 
            <%= date_field_tag 'issue[due_date]', '', :value => child.due_date, :size => 10 %><%= calendar_for('issue_due_date') %>
-
       </td>
 
       <td>
-        <% lastNote = child.journals.where.not(notes: '').reorder(:id => :desc).first %>
+        <% notes = child.journals.where.not(notes: '').to_a %>
+        <% lastNote = notes.pop %>
+        <% if notes.any? %>
+          <a class="previous_notes">Notes plus anciennes</a>
+          <div id="dialog_<%= child.id %>" style="display:none" title="Dialog Title">
+            <% for n in notes do %>
+              <fieldset>
+                <legend><%= n.created_on %></legend>
+                <%= textilizable(n.notes) %>
+              </fieldset>
+            <% end %>
+          </div>
+        <% end %>
         <% if lastNote %>
           <fieldset>
             <legend><%= lastNote.created_on if lastNote %></legend>
             <%= textilizable(lastNote.notes) if lastNote %>
           </fieldset>
-        <% end %>
-        <% if false and child.last_notes %>
-          Le  :
-          <%= textilizable(child, :last_notes).html_safe %>
-        <% end %>
-        <% if false %>
-        <% for note in child.journals do %>
-          <% if note.notes.present? %>
-            <%= note.created_on %>
-            <%= textilizable(note, :notes).html_safe %>
-          <% end %>
-        <% end %>
         <% end %>
         <fieldset>
           <legend>Nouveau commentaire</legend>
@@ -71,4 +70,20 @@
   <% end %>
 </table>
 
+
 <%= button_to :add_task, subtask_path, method: :get %>
+
+<script>
+$(document).ready(function () {
+  $(".previous_notes").each(function(index) {
+    $(this).click(function(){
+      var t = $(this).next().css('display');
+      if (t == "none") {
+        $(this).next().css('display', 'initial');
+      } else {
+        $(this).next().css('display', 'none');
+      }
+    })
+  });
+})
+</script>
