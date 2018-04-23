@@ -39,7 +39,7 @@
           <div id="dialog_<%= child.id %>" style="display:none" title="Dialog Title">
             <% for n in notes do %>
               <fieldset>
-                <legend><%= n.created_on %></legend>
+                <legend><%= format_time(n.created_on) %></legend>
                 <%= textilizable(n.notes) %>
               </fieldset>
             <% end %>
@@ -47,7 +47,7 @@
         <% end %>
         <% if lastNote %>
           <fieldset>
-            <legend><%= lastNote.created_on if lastNote %></legend>
+            <legend><%= format_time(lastNote.created_on) if lastNote %></legend>
             <%= textilizable(lastNote.notes) if lastNote %>
           </fieldset>
         <% end %>
