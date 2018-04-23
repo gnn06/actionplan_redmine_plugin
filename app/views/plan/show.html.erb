@@ -32,8 +32,18 @@
       </td>
 
       <td>
-        <% notes = child.journals.where.not(notes: '').to_a %>
-        <% lastNote = notes.pop %>
+        <% notes = child.journals.where.not(notes: '').reorder(:id => :desc).to_a %>
+        <% lastNote = notes.shift %>
+        <fieldset>
+          <legend>Nouveau commentaire</legend>
+          <%= text_area_tag 'issue[notes]' %>
+        </fieldset>
+        <% if lastNote %>
+          <fieldset>
+            <legend><%= format_time(lastNote.created_on) if lastNote %></legend>
+            <%= textilizable(lastNote.notes) if lastNote %>
+          </fieldset>
+        <% end %>
         <% if notes.any? %>
           <a class="previous_notes">Notes plus anciennes</a>
           <div id="dialog_<%= child.id %>" style="display:none" title="Dialog Title">
@@ -45,16 +55,6 @@
             <% end %>
           </div>
         <% end %>
-        <% if lastNote %>
-          <fieldset>
-            <legend><%= format_time(lastNote.created_on) if lastNote %></legend>
-            <%= textilizable(lastNote.notes) if lastNote %>
-          </fieldset>
-        <% end %>
-        <fieldset>
-          <legend>Nouveau commentaire</legend>
-          <%= text_area_tag 'issue[notes]' %>
-        </fieldset>
       </td>
       <td>
         <%= submit_tag l(:button_save) %>
