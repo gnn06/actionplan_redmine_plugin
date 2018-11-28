@@ -2,7 +2,8 @@ module RedmineDepthIssueFilter
     module PrependInstanceMethods
         def initialize_available_filters 
             super
-            add_available_filter "depth", :type => :integer, :label => "depth"
+            byebug
+            add_available_filter "depth", :type => :integer, :label => :depth_filter
         end
     end
 
