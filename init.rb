@@ -1,4 +1,5 @@
 require_dependency 'taskplan_hook_listener'
+require_dependency 'redmine_depth_issue_filter'
 
 Redmine::Plugin.register :taskplan_redmine_plugin do
   name 'Taskplan Redmine Plugin plugin'
