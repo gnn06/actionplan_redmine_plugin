@@ -21,14 +21,16 @@ class TaskplanHookListener < Redmine::Hook::ViewListener
     l2 = link_to("filter sustasks", _project_issues_path(@project, :set_filter => 1,
       :f  => filters << "parent_id", 
       :op => operators.merge({"parent_id" => "~"}),
-      :v  => values.merge({"parent_id" => [issue.id.to_s]})))
+      :v  => values.merge({"parent_id" => [issue.id.to_s]}),
+      :sort => context[:request].session[:issue_query][:sort]))
     # filter parent task 
     # TODO manage no grand_parent
     direct_parent_id = issue.parent.parent_id
     l3 = link_to("filter parent tasks", _project_issues_path(@project, :set_filter => 1,
       :f  => filters << "parent_id",
       :op => operators.merge({"parent_id" => "~"}),
-      :v  => values.merge({"parent_id" => [direct_parent_id.to_s]})))
+      :v  => values.merge({"parent_id" => [direct_parent_id.to_s]}),
+      :sort => context[:request].session[:issue_query][:sort]))
     return "<li>" + l1 + "</li>" +
           "<li>" + l2 + "</li>" +
           "<li>" + l3 + "</li>"
