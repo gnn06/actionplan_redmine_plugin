@@ -25,12 +25,6 @@ class TaskplanHookListener < Redmine::Hook::ViewListener
     # filter parent task 
     # TODO manage no grand_parent
     direct_parent_id = issue.parent.parent_id
-    # l3 = link_to("filter parent tasks", _project_issues_path(@project, :set_filter => 1,
-    #   :f => ["parent_id", "status"], 
-    #   :op => [{:parent_id => "~"}, 
-    #   :v => {:parent_id => [direct_parent_id]}
-    # ))
-    # l3 = link_to("filter parent tasks", project_issues_path(issue.project))
     l3 = link_to("filter parent tasks", _project_issues_path(@project, :set_filter => 1,
       :f  => filters << "parent_id",
       :op => operators.merge({"parent_id" => "~"}),
