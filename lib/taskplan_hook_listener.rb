@@ -14,9 +14,10 @@ class TaskplanHookListener < Redmine::Hook::ViewListener
     l1 = link_to("new subtask", new_project_issue_path(issue.project, :issue => attrs, :back_url => project_issues_path(issue.project)))
     # byebug
     # filter subtasks
-    # TODO maintenir columns, order
+    # TODO maintenir columns, group_by et autre
     # TODO manage saved query
     current_filters = context[:request].session[:issue_query][:filters]
+    byebug
     filters, operators, values = url_filters current_filters
     l2 = link_to("filter sustasks", _project_issues_path(@project, :set_filter => 1,
       :f  => filters << "parent_id", 
