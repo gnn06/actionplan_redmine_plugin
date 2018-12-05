@@ -14,37 +14,38 @@ class TaskplanHookListener < Redmine::Hook::ViewListener
     l1 = link_to("new subtask", new_project_issue_path(issue.project, :issue => attrs, :back_url => project_issues_path(issue.project)))
     # byebug
     # filter subtasks
-    # TODO maintenir columns, order, group_by et autre
     # TODO manage saved query
     current_filters = context[:request].session[:issue_query][:filters]
-    filters, operators, values = url_filters current_filters
-    l2 = link_to("filter sustasks", _project_issues_path(@project, :set_filter => 1,
-      :f  => filters << "parent_id", 
-      :op => operators.merge({"parent_id" => "~"}),
-      :v  => values.merge({"parent_id" => [issue.id.to_s]}),
-      :sort => context[:request].session[:issue_query][:sort]))
+    query_params = url_filters current_filters
+    l2 = link_to("filter sustasks", _project_issues_path(@project, { :set_filter => 1,
+      :f  => query_params[:filter] << "parent_id", 
+      :op => query_params[:operator].merge({"parent_id" => "~"}),
+      :v  => query_params[:value].merge({"parent_id" => [issue.id.to_s]}),
+      :sort => context[:request].session[:issue_query][:sort],
+      :c => context[:request].session[:issue_query][:column_names],
+      :group_by => context[:request].session[:issue_query][:group_by]}))
     # filter parent task 
     # TODO manage no grand_parent
     direct_parent_id = issue.parent.parent_id
-    l3 = link_to("filter parent tasks", _project_issues_path(@project, :set_filter => 1,
-      :f  => filters << "parent_id",
-      :op => operators.merge({"parent_id" => "~"}),
-      :v  => values.merge({"parent_id" => [direct_parent_id.to_s]}),
-      :sort => context[:request].session[:issue_query][:sort]))
+    l3 = link_to("filter parent tasks", _project_issues_path(@project, { :set_filter => 1,
+      :f  => query_params[:filter] << "parent_id",
+      :op => query_params[:operator].merge({"parent_id" => "~"}),
+      :v  => query_params[:value].merge({"parent_id" => [direct_parent_id.to_s]}),
+      :sort => context[:request].session[:issue_query][:sort],
+      :c => context[:request].session[:issue_query][:column_names],
+      :group_by => context[:request].session[:issue_query][:group_by]}))
     return "<li>" + l1 + "</li>" +
           "<li>" + l2 + "</li>" +
           "<li>" + l3 + "</li>"
   end
 
   def url_filters(filters_hash)
-    filters = []
-    operators = {}
-    values = {}
+    result = { :filter => [], :operator => {}, :value => {}}
     filters_hash.each do |key, value|
-      filters << key
-      operators[key] = value[:operator]
-      values[key] = value[:values]
+      result[:filter] << key
+      result[:operator].merge!({ key => value[:operator] })
+      result[:value].merge!({ key =>  value[:values] })
     end
-    return filters, operators, values
+    result
   end
 end
