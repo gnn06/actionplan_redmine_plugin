@@ -1,8 +1,9 @@
 require 'byebug'
 
-class TaskplanHookListener < Redmine::Hook::ViewListener
+class ActionplanHookListener < Redmine::Hook::ViewListener
   include IssuesHelper
   include RoutesHelper
+  include ContextMenusHelper
 
   def view_issues_context_menu_start(context = {})
     issue = context[:issues][0]
@@ -17,7 +18,7 @@ class TaskplanHookListener < Redmine::Hook::ViewListener
     # TODO manage saved query
     current_filters = context[:request].session[:issue_query][:filters]
     query_params = url_filters current_filters
-    l2 = link_to("filter sustasks", _project_issues_path(@project, { :set_filter => 1,
+    l2 = context_menu_link("filter sustasks", _project_issues_path(@project, { :set_filter => 1,
       :f  => query_params[:filter] << "parent_id", 
       :op => query_params[:operator].merge({"parent_id" => "~"}),
       :v  => query_params[:value].merge({"parent_id" => [issue.id.to_s]}),
@@ -26,14 +27,24 @@ class TaskplanHookListener < Redmine::Hook::ViewListener
       :group_by => context[:request].session[:issue_query][:group_by]}))
     # filter parent task 
     # TODO manage no grand_parent
-    direct_parent_id = issue.parent.parent_id
-    l3 = link_to("filter parent tasks", _project_issues_path(@project, { :set_filter => 1,
-      :f  => query_params[:filter] << "parent_id",
-      :op => query_params[:operator].merge({"parent_id" => "~"}),
-      :v  => query_params[:value].merge({"parent_id" => [direct_parent_id.to_s]}),
-      :sort => context[:request].session[:issue_query][:sort],
-      :c => context[:request].session[:issue_query][:column_names],
-      :group_by => context[:request].session[:issue_query][:group_by]}))
+    direct_parent_id = issue.parent&.parent_id
+    if direct_parent_id then
+      l3 = context_menu_link("filter parent tasks", _project_issues_path(@project, { :set_filter => 1,
+        :f  => query_params[:filter] << "parent_id",
+        :op => query_params[:operator].merge({"parent_id" => "~"}),
+        :v  => query_params[:value].merge({"parent_id" => [direct_parent_id.to_s]}),
+        :sort => context[:request].session[:issue_query][:sort],
+        :c => context[:request].session[:issue_query][:column_names],
+        :group_by => context[:request].session[:issue_query][:group_by]}))
+    else
+      l3 = context_menu_link("filter parent tasks", _project_issues_path(@project, { :set_filter => 1,
+        :f  => query_params[:filter].without("parent_id"),
+        :op => query_params[:operator].without("parent_id"),
+        :v  => query_params[:value].without("parent_id"),
+        :sort => context[:request].session[:issue_query][:sort],
+        :c => context[:request].session[:issue_query][:column_names],
+        :group_by => context[:request].session[:issue_query][:group_by]}))
+    end
     return "<li>" + l1 + "</li>" +
           "<li>" + l2 + "</li>" +
           "<li>" + l3 + "</li>"
