@@ -1,3 +1,10 @@
 = plan
 
-Description goes here
+Redmine plugin to helps manage [action plans](https://en.wikipedia.org/wiki/Action_plan).
+
+Supposing you create hierarchy of tasks ussing subtasks, this plugin adds into issues list contextual menu commands that :
+* add a subtask to the select task
+* filter issues at selected subtasks
+* filter issues at parent tasks.
+
+This plugin also add a filter 'Depth' that filter issues by depth relative to root hierarchy. 
