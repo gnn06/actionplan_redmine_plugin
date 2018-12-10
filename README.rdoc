@@ -1,4 +1,4 @@
-= plan
+= Action plan redmine plugin
 
 Redmine plugin to helps manage [action plans](https://en.wikipedia.org/wiki/Action_plan).
 
