@@ -1,6 +1,6 @@
 = Action plan redmine plugin
 
-Redmine plugin to helps manage [action plans](https://en.wikipedia.org/wiki/Action_plan).
+Redmine plugin to helps manage action plans[https://en.wikipedia.org/wiki/Action_plan].
 
 Supposing you create hierarchy of tasks ussing subtasks, this plugin adds into issues list contextual menu commands that :
 * add a subtask to the select task
