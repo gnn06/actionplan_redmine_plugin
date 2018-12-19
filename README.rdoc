@@ -8,3 +8,5 @@ Supposing you create hierarchy of tasks ussing subtasks, this plugin adds into i
 * filter issues at parent tasks.
 
 This plugin also add a filter 'Depth' that filter issues by depth relative to root hierarchy. 
+
+See https://github.com/gnn06/redmine_docker
