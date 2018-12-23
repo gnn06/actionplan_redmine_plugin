@@ -2,3 +2,4 @@
 en:
   # my_label: "My label"
   depth_filter: "Depth"
+  root_task_filter: "Root Task"
